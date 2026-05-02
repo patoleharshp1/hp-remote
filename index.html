@@ -1,1 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HP Remote Controller</title>
+    <style>
+        body { background-color: #000; color: #ff0000; font-family: 'Courier New', Courier, monospace; text-align: center; padding-top: 50px; }
+        h1 { font-size: 24px; text-shadow: 2px 2px #550000; }
+        .container { display: flex; flex-direction: column; align-items: center; }
+        .btn { background-color: #333; border: 2px solid #ff0000; color: #ff0000; padding: 20px; margin: 10px; 
+               border-radius: 15px; width: 120px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:active { background-color: #ff0000; color: #000; scale: 0.95; }
+        .unlock { background-color: #ff0000; color: #000; width: 260px; margin-top: 30px; font-size: 18px; }
+        #status { color: #00ff00; margin-top: 20px; font-size: 14px; }
+    </style>
+</head>
+<body>
 
+    <h1>HP HARSH OS <br> CLOUD REMOTE</h1>
+
+    <div class="container">
+        <button class="btn" onclick="sendCommand('UP')">UP</button>
+        <div style="display: flex;">
+            <button class="btn" onclick="sendCommand('LEFT')">LEFT</button>
+            <button class="btn" onclick="sendCommand('RIGHT')">RIGHT</button>
+        </div>
+        <button class="btn" onclick="sendCommand('DOWN')">DOWN</button>
+        
+        <button class="btn unlock" onclick="sendCommand('UNLOCK')">UNLOCK SYSTEM</button>
+    </div>
+
+    <p id="status">System Standby...</p>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // These are your actual keys from your screenshot!
+        const firebaseConfig = {
+            apiKey: "AIzaSyADzCExTvEjwcjC6FK1kfmO7N-V_66nE",
+            authDomain: "hp-remote-web.firebaseapp.com",
+            projectId: "hp-remote-web",
+            storageBucket: "hp-remote-web.appspot.com",
+            messagingSenderId: "410500939891",
+            appId: "1:410500939891:web:ed41e376044733e8b4e8b0",
+            measurementId: "G-KDE0PSGYGE",
+            databaseURL: "https://hp-remote-web-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.sendCommand = function(cmd) {
+            const statusText = document.getElementById('status');
+            set(ref(db, 'remote_command'), cmd)
+                .then(() => {
+                    statusText.innerText = "Sent: " + cmd;
+                    setTimeout(() => { statusText.innerText = "System Standby..."; }, 2000);
+                })
+                .catch((error) => {
+                    statusText.innerText = "Error: Check Internet";
+                    console.error(error);
+                });
+        }
+    </script>
+</body>
+</html>
