@@ -5,48 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HP Remote</title>
     <style>
-        body { background-color: #000000; color: #FFFFFF; font-family: 'Google Sans', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding-top: 40px; height: 100vh; overflow: hidden; }
-        .remote-case { background: #1a1a1a; padding: 30px 20px; border-radius: 50px; box-shadow: 0 0 30px rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; width: 260px; }
-        
-        /* Circular D-Pad */
+        body { background-color: #000000; color: #FFFFFF; font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; padding-top: 40px; height: 100vh; overflow: hidden; }
+        .remote-case { background: #1a1a1a; padding: 30px 20px; border-radius: 50px; box-shadow: 0 0 30px rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; width: 260px; }
         .d-pad { position: relative; width: 200px; height: 200px; background: #2d2d2d; border-radius: 50%; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; }
-        .center-ok { width: 90px; height: 90px; background: #404040; border: none; border-radius: 50%; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; z-index: 5; }
-        .center-ok:active { background: #505050; transform: scale(0.95); }
-        .arrow { position: absolute; background: transparent; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; }
-        .up { top: 0; } .down { bottom: 0; } .left { left: 0; width: 50px; height: 100%; } .right { right: 0; width: 50px; height: 100%; }
-
-        /* Navigation Buttons Row */
-        .row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 20px; padding: 0 10px; }
+        .center-ok { width: 90px; height: 90px; background: #404040; border: none; border-radius: 50%; color: white; font-weight: bold; cursor: pointer; z-index: 5; }
+        .arrow { position: absolute; background: transparent; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .up { top: 10px; width: 100%; height: 50px; } .down { bottom: 10px; width: 100%; height: 50px; } 
+        .left { left: 10px; width: 50px; height: 100%; } .right { right: 10px; width: 50px; height: 100%; }
+        .row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 20px; padding: 0 10px; box-sizing: border-box; }
         .nav-btn { width: 65px; height: 65px; background: #2d2d2d; border: none; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
-        .nav-btn:active { background: #404040; }
-        
-        /* Special Action Buttons */
+        .nav-btn.active { background: #FFFFFF; color: #000000; }
         .unlock-btn { width: 90%; height: 50px; background: #FFFFFF; color: #000000; border: none; border-radius: 25px; font-weight: bold; margin-top: 10px; cursor: pointer; }
-        .unlock-btn:active { background: #e0e0e0; }
-
-        #hiddenInput { position: absolute; opacity: 0; pointer-events: none; }
         #status { color: #808080; font-size: 11px; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        #hiddenInput { position: absolute; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <div class="remote-case">
         <div class="d-pad">
-            <button class="arrow up" onclick="send('UP')">▲</button>
-            <button class="arrow left" onclick="send('LEFT')">◀</button>
+            <button class="arrow up" onclick="handleDirection('UP')">▲</button>
+            <button class="arrow left" onclick="handleDirection('LEFT')">◀</button>
             <button class="center-ok" onclick="send('OK')">OK</button>
-            <button class="arrow right" onclick="send('RIGHT')">▶</button>
-            <button class="arrow down" onclick="send('DOWN')">▼</button>
+            <button class="arrow right" onclick="handleDirection('RIGHT')">▶</button>
+            <button class="arrow down" onclick="handleDirection('DOWN')">▼</button>
         </div>
 
         <div class="row">
-            <button class="nav-btn" title="Back" onclick="send('BACK')">↩</button>
-            <button class="nav-btn" title="Keyboard" onclick="openKeyboard()">⌨</button>
-            <button class="nav-btn" title="Mouse" onclick="send('MOUSE')">🖱</button>
+            <button class="nav-btn" onclick="send('BACK')">↩</button>
+            <button class="nav-btn" onclick="openKeyboard()">⌨</button>
+            <button id="mouseBtn" class="nav-btn" onclick="toggleMouse()">🖱</button>
         </div>
 
         <button class="unlock-btn" onclick="send('UNLOCK')">UNLOCK SYSTEM</button>
-        
         <p id="status">System Online</p>
     </div>
 
@@ -56,35 +47,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyADzCExTvEjwcjC6FK1kfmO7N-V_66nE",
-            databaseURL: "https://hp-remote-web-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "hp-remote-web",
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        window.send = function(cmd) {
-            document.getElementById('status').innerText = "Sending: " + cmd;
-            set(ref(db, 'remote_command'), cmd);
-            setTimeout(() => { document.getElementById('status').innerText = "System Online"; }, 1000);
-        }
-
-        window.openKeyboard = function() {
-            document.getElementById('hiddenInput').focus();
-            document.getElementById('status').innerText = "Keyboard Ready";
-        }
-
-        document.getElementById('hiddenInput').addEventListener('input', (e) => {
-            set(ref(db, 'remote_keyboard'), e.target.value);
-        });
-    </script>
-</body>
-</html>
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-        // These are your actual keys from your screenshot!
         const firebaseConfig = {
             apiKey: "AIzaSyADzCExTvEjwcjC6FK1kfmO7N-V_66nE",
             authDomain: "hp-remote-web.firebaseapp.com",
@@ -98,19 +60,42 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        let mouseMode = false;
 
-        window.sendCommand = function(cmd) {
-            const statusText = document.getElementById('status');
-            set(ref(db, 'remote_command'), cmd)
-                .then(() => {
-                    statusText.innerText = "Sent: " + cmd;
-                    setTimeout(() => { statusText.innerText = "System Standby..."; }, 2000);
-                })
-                .catch((error) => {
-                    statusText.innerText = "Error: Check Internet";
-                    console.error(error);
-                });
-        }
+        window.toggleMouse = function() {
+            mouseMode = !mouseMode;
+            const btn = document.getElementById('mouseBtn');
+            const status = document.getElementById('status');
+            if(mouseMode) {
+                btn.classList.add('active');
+                status.innerText = "MOUSE MODE: ON";
+            } else {
+                btn.classList.remove('active');
+                status.innerText = "MOUSE MODE: OFF";
+            }
+        };
+
+        window.handleDirection = function(dir) {
+            const cmd = mouseMode ? "MOUSE_" + dir : dir;
+            send(cmd);
+        };
+
+        window.send = function(cmd) {
+            set(ref(db, 'remote_command'), cmd);
+            if(!mouseMode) {
+                document.getElementById('status').innerText = "Sent: " + cmd;
+                setTimeout(() => { document.getElementById('status').innerText = "System Online"; }, 1000);
+            }
+        };
+
+        window.openKeyboard = function() {
+            document.getElementById('hiddenInput').focus();
+            document.getElementById('status').innerText = "Keyboard Ready";
+        };
+
+        document.getElementById('hiddenInput').addEventListener('input', (e) => {
+            set(ref(db, 'remote_keyboard'), e.target.value);
+        });
     </script>
 </body>
 </html>
