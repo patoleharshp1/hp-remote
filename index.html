@@ -3,37 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HP Remote</title>
+    <title>HP Remote Pro</title>
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            background-color: #000; 
-            color: #fff; 
-            font-family: sans-serif; 
-            margin: 0; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
-        }
+        /* CSS RESET TO PREVENT LEAKS */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        html, body { height: 100%; width: 100%; overflow: hidden; background: #000; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; align-items: center; justify-content: center; }
+
+        /* MAIN REMOTE FRAME */
         .remote-case {
-            background: #111;
-            width: 90%;
-            max-width: 340px;
-            height: 90%;
+            background: linear-gradient(145deg, #111, #050505);
+            width: 92%;
+            max-width: 350px;
+            height: 92%;
             border-radius: 50px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 30px 20px;
+            padding: 40px 20px;
             border: 1px solid #222;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        .dpad { 
-            position: relative; 
-            width: 220px; 
+
+        .brand { color: #333; font-size: 10px; letter-spacing: 4px; font-weight: bold; text-transform: uppercase; }
+
+        /* THE D-PAD */
+        .dpad {
+            position: relative;
+            width: 230px;
+            height: 230px;
+            background: #181818;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 15px #000;
+        }
+        .ok-center {
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, #333, #222);
+            border: 1px solid #444;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.1s;
+        }
+        .ok-center:active { transform: scale(0.9); background: #444; }
+
+        .arrow {
+            position: absolute;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 24px;
+            cursor: pointer;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .arrow:active { color: #fff; }
+        .up { top: 5px; } .down { bottom: 5px; } .left { left: 5px; } .right { right: 5px; }
+
+        /* 5-BUTTON ROW */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+        .icon-btn {
+            aspect-ratio: 1/1;
+            background: #1a1a1a;
+            border: none;
+            border-radius: 50%;
+            color: #aaa;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-btn:active { background: #fff; color: #000; }
+
+        /* ACTION AREA */
+        .action-area { width: 100%; text-align: center; }
+        .unlock-bar {
+            width: 100%;
+            height: 55px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        #status-msg { color: #444; font-size: 9px; letter-spacing: 1px; }
+        .dl-text { color: #222; font-size: 9px; text-decoration: none; display: block; margin-top: 8px; }
+
+        #hiddenInput { position: absolute; left: -9999px; }
+    </style>
+</head>
+<body>
+
+    <div class="remote-case">
+        <div class="brand">HARSH OS 7</div>
+
+        <div class="dpad">
+            <button class="arrow up" onclick="cmd('UP')">▲</button>
+            <button class="arrow left" onclick="cmd('LEFT')">◀</button>
+            <button class="ok-center" onclick="cmd('OK')">OK</button>
+            <button class="arrow right" onclick="cmd('RIGHT')">▶</button>
+            <button class="arrow down" onclick="cmd('DOWN')">▼</button>
+        </div>
+
+        <div class="button-grid">
+            <button class="icon-btn" onclick="cmd('BACK')">↩</button>
+            <button class="icon-btn" onclick="openKB()">⌨</button>
+            <button class="icon-btn" onclick="cmd('MOUSE')">🖱</button>
+            <button class="icon-btn" onclick="cmd('HOME')">🏠</button>
+            <button class="icon-btn" onclick="cmd('POWER')">⏻</button>
+        </div>
+
+        <div class="action-area">
+            <button class="unlock-bar" onclick="cmd('UNLOCK')">Unlock System</button>
+            <p id="status-msg">SYSTEM SECURE</p>
+            <a href="hp-remote.apk" class="dl-text" download>DOWNLOAD APK V1.0</a>
+        </div>
+    </div>
+
+    <input type="text" id="hiddenInput">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADzCExTvEjwcjC6FK1kfmO7N-V_66nE",
+            databaseURL: "https://hp-remote-web-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hp-remote-web"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.cmd = (val) => {
+            set(ref(db, 'remote_command'), val);
+            const s = document.getElementById('status-msg');
+            s.innerText = "EXECUTING: " + val;
+            s.style.color = "#fff";
+            setTimeout(() => { s.innerText = "SYSTEM SECURE"; s.style.color = "#444"; }, 1000);
+        };
+
+        window.openKB = () => { document.getElementById('hiddenInput').focus(); };
+        document.getElementById('hiddenInput').addEventListener('input', (e) => {
+            set(ref(db, 'remote_keyboard'), e.target.value);
+        });
+    </script>
+</body>
+</html>
             height: 220px; 
             background: #1a1a1a; 
             border-radius: 50%; 
