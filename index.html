@@ -5,140 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HP Remote Pro</title>
     <style>
-        /* CSS RESET TO PREVENT LEAKS */
+        /* Essential Reset to stop code leaks and scrolling */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        html, body { height: 100%; width: 100%; overflow: hidden; background: #000; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; align-items: center; justify-content: center; }
-
-        /* MAIN REMOTE FRAME */
-        .remote-case {
-            background: linear-gradient(145deg, #111, #050505);
-            width: 92%;
-            max-width: 350px;
-            height: 92%;
-            border-radius: 50px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 40px 20px;
-            border: 1px solid #222;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        html, body { height: 100%; width: 100%; overflow: hidden; background: #000; color: #fff; font-family: sans-serif; }
+        
+        .main-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            height: 100vh; width: 100vw; padding: 40px 20px;
         }
 
-        .brand { color: #333; font-size: 10px; letter-spacing: 4px; font-weight: bold; text-transform: uppercase; }
+        .header { color: #333; font-size: 12px; letter-spacing: 4px; font-weight: bold; }
 
-        /* THE D-PAD */
-        .dpad {
-            position: relative;
-            width: 230px;
-            height: 230px;
-            background: #181818;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 0 15px #000;
+        /* Giant Google TV Style D-Pad */
+        .google-dpad {
+            position: relative; width: 280px; height: 280px; background: #1a1a1a; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .ok-center {
-            width: 90px;
-            height: 90px;
-            background: radial-gradient(circle, #333, #222);
-            border: 1px solid #444;
-            border-radius: 50%;
-            color: #fff;
-            font-weight: bold;
-            font-size: 18px;
-            cursor: pointer;
-            z-index: 10;
-            transition: 0.1s;
+            width: 100px; height: 100px; background: #333; border: none; 
+            border-radius: 50%; color: #fff; font-weight: bold; font-size: 22px; 
+            cursor: pointer; z-index: 10; transition: 0.1s;
         }
         .ok-center:active { transform: scale(0.9); background: #444; }
 
         .arrow {
-            position: absolute;
-            background: none;
-            border: none;
-            color: #666;
-            font-size: 24px;
-            cursor: pointer;
-            width: 70px;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: absolute; background: none; border: none; color: #fff; 
+            font-size: 30px; cursor: pointer; width: 80px; height: 80px;
+            display: flex; align-items: center; justify-content: center;
         }
-        .arrow:active { color: #fff; }
-        .up { top: 5px; } .down { bottom: 5px; } .left { left: 5px; } .right { right: 5px; }
+        .up { top: 10px; } .down { bottom: 10px; } .left { left: 10px; } .right { right: 10px; }
 
-        /* 5-BUTTON ROW */
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            width: 100%;
+        /* Large Action Icons */
+        .icon-row { display: flex; gap: 20px; width: 100%; justify-content: center; }
+        .large-icon {
+            width: 70px; height: 70px; background: #1a1a1a; border: none; 
+            border-radius: 50%; color: #fff; font-size: 24px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
-        .icon-btn {
-            aspect-ratio: 1/1;
-            background: #1a1a1a;
-            border: none;
-            border-radius: 50%;
-            color: #aaa;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .icon-btn:active { background: #fff; color: #000; }
+        .large-icon:active { background: #fff; color: #000; }
 
-        /* ACTION AREA */
-        .action-area { width: 100%; text-align: center; }
-        .unlock-bar {
-            width: 100%;
-            height: 55px;
-            background: #fff;
-            color: #000;
-            border: none;
-            border-radius: 30px;
-            font-weight: 800;
-            font-size: 14px;
-            cursor: pointer;
-            margin-bottom: 15px;
-            text-transform: uppercase;
+        /* Bottom Unlock Section */
+        .bottom-section { width: 100%; text-align: center; }
+        .unlock-pill {
+            width: 100%; height: 65px; background: #fff; color: #000; 
+            border: none; border-radius: 35px; font-weight: 900; 
+            font-size: 18px; cursor: pointer; text-transform: uppercase;
         }
         
-        #status-msg { color: #444; font-size: 9px; letter-spacing: 1px; }
-        .dl-text { color: #222; font-size: 9px; text-decoration: none; display: block; margin-top: 8px; }
-
+        #status-bar { color: #444; font-size: 11px; margin-top: 10px; letter-spacing: 1px; }
         #hiddenInput { position: absolute; left: -9999px; }
     </style>
 </head>
 <body>
 
-    <div class="remote-case">
-        <div class="brand">HARSH OS 7</div>
+    <div class="main-screen">
+        <div class="header">HP HARSH OS 7</div>
 
-        <div class="dpad">
-            <button class="arrow up" onclick="cmd('UP')">▲</button>
-            <button class="arrow left" onclick="cmd('LEFT')">◀</button>
-            <button class="ok-center" onclick="cmd('OK')">OK</button>
-            <button class="arrow right" onclick="cmd('RIGHT')">▶</button>
-            <button class="arrow down" onclick="cmd('DOWN')">▼</button>
+        <div class="google-dpad">
+            <button class="arrow up" onclick="send('UP')">▲</button>
+            <button class="arrow left" onclick="send('LEFT')">◀</button>
+            <button class="ok-center" onclick="send('OK')">OK</button>
+            <button class="arrow right" onclick="send('RIGHT')">▶</button>
+            <button class="arrow down" onclick="send('DOWN')">▼</button>
         </div>
 
-        <div class="button-grid">
-            <button class="icon-btn" onclick="cmd('BACK')">↩</button>
-            <button class="icon-btn" onclick="openKB()">⌨</button>
-            <button class="icon-btn" onclick="cmd('MOUSE')">🖱</button>
-            <button class="icon-btn" onclick="cmd('HOME')">🏠</button>
-            <button class="icon-btn" onclick="cmd('POWER')">⏻</button>
+        <div class="icon-row">
+            <button class="large-icon" onclick="send('BACK')">↩</button>
+            <button class="large-icon" onclick="openKB()">⌨</button>
+            <button class="large-icon" onclick="send('HOME')">🏠</button>
+            <button class="large-icon" onclick="send('MOUSE')">🖱</button>
         </div>
 
-        <div class="action-area">
-            <button class="unlock-bar" onclick="cmd('UNLOCK')">Unlock System</button>
-            <p id="status-msg">SYSTEM SECURE</p>
-            <a href="hp-remote.apk" class="dl-text" download>DOWNLOAD APK V1.0</a>
+        <div class="bottom-section">
+            <button class="unlock-pill" onclick="send('UNLOCK')">Unlock System</button>
+            <p id="status-bar">System Ready</p>
         </div>
     </div>
 
@@ -157,12 +98,12 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        window.cmd = (val) => {
+        window.send = (val) => {
             set(ref(db, 'remote_command'), val);
-            const s = document.getElementById('status-msg');
-            s.innerText = "EXECUTING: " + val;
+            const s = document.getElementById('status-bar');
+            s.innerText = "Sent: " + val;
             s.style.color = "#fff";
-            setTimeout(() => { s.innerText = "SYSTEM SECURE"; s.style.color = "#444"; }, 1000);
+            setTimeout(() => { s.innerText = "System Ready"; s.style.color = "#444"; }, 800);
         };
 
         window.openKB = () => { document.getElementById('hiddenInput').focus(); };
@@ -172,91 +113,7 @@
     </script>
 </body>
 </html>
-            height: 220px; 
-            background: #1a1a1a; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        .ok-btn { 
-            width: 80px; 
-            height: 80px; 
-            background: #333; 
-            border: none; 
-            border-radius: 50%; 
-            color: #fff; 
-            font-weight: bold; 
-            cursor: pointer; 
-            z-index: 5; 
-        }
-        .arrow { position: absolute; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; width: 60px; height: 60px; }
-        .up { top: 5px; } .down { bottom: 5px; } .left { left: 5px; } .right { right: 5px; }
-        
-        .btn-row { display: flex; gap: 15px; width: 100%; justify-content: center; }
-        .nav-btn { width: 60px; height: 60px; background: #1a1a1a; border: none; border-radius: 50%; color: #fff; font-size: 20px; cursor: pointer; }
-        
-        .unlock-btn { width: 100%; height: 50px; background: #fff; color: #000; border: none; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        #status { color: #555; font-size: 10px; margin: 0; text-transform: uppercase; }
-        #hiddenInput { position: absolute; opacity: 0; pointer-events: none; }
-    </style>
-</head>
-<body>
-
-    <div class="remote-case">
-        <div style="color:#333; font-size:10px; letter-spacing:2px;">HP HARSH OS 7</div>
-
-        <div class="dpad">
-            <button class="arrow up" onclick="send('UP')">▲</button>
-            <button class="arrow left" onclick="send('LEFT')">◀</button>
-            <button class="ok-btn" onclick="send('OK')">OK</button>
-            <button class="arrow right" onclick="send('RIGHT')">▶</button>
-            <button class="arrow down" onclick="send('DOWN')">▼</button>
-        </div>
-
-        <div class="btn-row">
-            <button class="nav-btn" onclick="send('BACK')">↩</button>
-            <button class="nav-btn" onclick="openKey()">⌨</button>
-            <button class="nav-btn" onclick="send('MOUSE')">🖱</button>
-            <button class="nav-btn" onclick="send('HOME')">🏠</button>
-        </div>
-
-        <div style="width: 100%; text-align: center;">
-            <button class="unlock-btn" onclick="send('UNLOCK')">UNLOCK SYSTEM</button>
-            <p id="status">System Online</p>
-            <a href="hp-remote.apk" style="color:#333; text-decoration:none; font-size:10px;" download>Download APK</a>
-        </div>
-    </div>
-
-    <input type="text" id="hiddenInput">
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyADzCExTvEjwcjC6FK1kfmO7N-V_66nE",
-            databaseURL: "https://hp-remote-web-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "hp-remote-web"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        window.send = (cmd) => { set(ref(db, 'remote_command'), cmd); };
-        window.openKey = () => { document.getElementById('hiddenInput').focus(); };
-        document.getElementById('hiddenInput').oninput = (e) => { set(ref(db, 'remote_keyboard'), e.target.value); };
-    </script>
-</body>
-</html>
-        </div>
-        <div class="controls">
-            <div class="row">
-                <button class="nav-btn" onclick="send('BACK')">↩</button>
-                <button class="nav-btn" onclick="openKeyboard()">⌨</button>
-                <button id="mouseBtn" class="nav-btn" onclick="toggleMouse()">🖱</button>
-            </div>
-            <button class="unlock-btn" onclick="send('UNLOCK')">UNLOCK SYSTEM</button>
+CK')">UNLOCK SYSTEM</button>
             <p id="status">System Online</p>
             <a href="hp-remote.apk" class="apk-link" download>Download APK</a>
         </div>
