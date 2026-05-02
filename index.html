@@ -6,34 +6,111 @@
     <title>HP Remote</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #000000; color: #FFFFFF; font-family: Arial, sans-serif; margin: 0; height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .remote-case { background: #111111; width: 90%; max-width: 340px; height: 92%; border-radius: 60px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 30px 20px; box-shadow: 0 0 40px rgba(255,255,255,0.03); }
-        .header-text { color: #333; font-size: 12px; letter-spacing: 2px; font-weight: bold; margin-bottom: 10px; }
-        .d-pad { position: relative; width: 220px; height: 220px; background: #1f1f1f; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .center-ok { width: 90px; height: 90px; background: #333333; border: none; border-radius: 50%; color: white; font-weight: bold; font-size: 18px; cursor: pointer; z-index: 5; }
-        .center-ok:active { background: #444; transform: scale(0.92); }
-        .arrow { position: absolute; background: transparent; border: none; color: #FFFFFF; font-size: 24px; cursor: pointer; }
-        .up { top: 5px; width: 100%; height: 60px; } .down { bottom: 5px; width: 100%; height: 60px; } 
-        .left { left: 5px; width: 60px; height: 100%; } .right { right: 5px; width: 60px; height: 100%; }
-        .controls { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .row { display: flex; justify-content: center; gap: 20px; width: 100%; }
-        .nav-btn { width: 60px; height: 60px; background: #252525; border: none; border-radius: 50%; color: white; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .nav-btn.active { background: #FFFFFF; color: #000000; }
-        .unlock-btn { width: 100%; height: 55px; background: #FFFFFF; color: #000000; border: none; border-radius: 30px; font-weight: bold; font-size: 15px; cursor: pointer; }
-        #status { color: #555; font-size: 10px; text-transform: uppercase; margin: 5px 0; }
-        .apk-link { color: #444; text-decoration: none; font-size: 10px; }
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: sans-serif; 
+            margin: 0; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+        }
+        .remote-case {
+            background: #111;
+            width: 90%;
+            max-width: 340px;
+            height: 90%;
+            border-radius: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 30px 20px;
+            border: 1px solid #222;
+        }
+        .dpad { 
+            position: relative; 
+            width: 220px; 
+            height: 220px; 
+            background: #1a1a1a; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .ok-btn { 
+            width: 80px; 
+            height: 80px; 
+            background: #333; 
+            border: none; 
+            border-radius: 50%; 
+            color: #fff; 
+            font-weight: bold; 
+            cursor: pointer; 
+            z-index: 5; 
+        }
+        .arrow { position: absolute; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; width: 60px; height: 60px; }
+        .up { top: 5px; } .down { bottom: 5px; } .left { left: 5px; } .right { right: 5px; }
+        
+        .btn-row { display: flex; gap: 15px; width: 100%; justify-content: center; }
+        .nav-btn { width: 60px; height: 60px; background: #1a1a1a; border: none; border-radius: 50%; color: #fff; font-size: 20px; cursor: pointer; }
+        
+        .unlock-btn { width: 100%; height: 50px; background: #fff; color: #000; border: none; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        #status { color: #555; font-size: 10px; margin: 0; text-transform: uppercase; }
         #hiddenInput { position: absolute; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
+
     <div class="remote-case">
-        <div class="header-text">HP HARSH OS 7</div>
-        <div class="d-pad">
-            <button class="arrow up" onclick="handleDirection('UP')">▲</button>
-            <button class="arrow left" onclick="handleDirection('LEFT')">◀</button>
-            <button class="center-ok" onclick="send('OK')">OK</button>
-            <button class="arrow right" onclick="handleDirection('RIGHT')">▶</button>
-            <button class="arrow down" onclick="handleDirection('DOWN')">▼</button>
+        <div style="color:#333; font-size:10px; letter-spacing:2px;">HP HARSH OS 7</div>
+
+        <div class="dpad">
+            <button class="arrow up" onclick="send('UP')">▲</button>
+            <button class="arrow left" onclick="send('LEFT')">◀</button>
+            <button class="ok-btn" onclick="send('OK')">OK</button>
+            <button class="arrow right" onclick="send('RIGHT')">▶</button>
+            <button class="arrow down" onclick="send('DOWN')">▼</button>
+        </div>
+
+        <div class="btn-row">
+            <button class="nav-btn" onclick="send('BACK')">↩</button>
+            <button class="nav-btn" onclick="openKey()">⌨</button>
+            <button class="nav-btn" onclick="send('MOUSE')">🖱</button>
+            <button class="nav-btn" onclick="send('HOME')">🏠</button>
+        </div>
+
+        <div style="width: 100%; text-align: center;">
+            <button class="unlock-btn" onclick="send('UNLOCK')">UNLOCK SYSTEM</button>
+            <p id="status">System Online</p>
+            <a href="hp-remote.apk" style="color:#333; text-decoration:none; font-size:10px;" download>Download APK</a>
+        </div>
+    </div>
+
+    <input type="text" id="hiddenInput">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADzCExTvEjwcjC6FK1kfmO7N-V_66nE",
+            databaseURL: "https://hp-remote-web-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hp-remote-web"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.send = (cmd) => { set(ref(db, 'remote_command'), cmd); };
+        window.openKey = () => { document.getElementById('hiddenInput').focus(); };
+        document.getElementById('hiddenInput').oninput = (e) => { set(ref(db, 'remote_keyboard'), e.target.value); };
+    </script>
+</body>
+</html>
         </div>
         <div class="controls">
             <div class="row">
