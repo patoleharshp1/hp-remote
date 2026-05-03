@@ -3,37 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HP Remote Ultra Pro Max</title>
+    <title>HP Remote Pro</title>
     <style>
+        /* Essential Reset to stop code leaks and scrolling */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         html, body { height: 100%; width: 100%; overflow: hidden; background: #000; color: #fff; font-family: sans-serif; }
         
-        .main-container {
+        .main-screen {
             display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-            height: 100vh; width: 100vw; padding: 25px 20px;
+            height: 100vh; width: 100vw; padding: 40px 20px;
         }
 
-        .header-area { text-align: center; }
-        .title-primary { color: #fff; font-size: 22px; font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; }
-        .title-secondary { color: #444; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; font-weight: bold; }
+        .header { color: #333; font-size: 12px; letter-spacing: 4px; font-weight: bold; }
 
-        /* Massive Google TV D-Pad */
+        /* Giant Google TV Style D-Pad */
         .google-dpad {
-            position: relative; width: 280px; height: 280px; background: #151515; 
+            position: relative; width: 280px; height: 280px; background: #1a1a1a; 
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .ok-btn {
-            width: 100px; height: 100px; background: #2a2a2a; border: 2px solid #333; 
-            border-radius: 50%; color: #fff; font-weight: 900; font-size: 24px; 
+        .ok-center {
+            width: 100px; height: 100px; background: #333; border: none; 
+            border-radius: 50%; color: #fff; font-weight: bold; font-size: 22px; 
             cursor: pointer; z-index: 10; transition: 0.1s;
         }
-        .ok-btn:active { transform: scale(0.9); background: #444; }
+        .ok-center:active { transform: scale(0.9); background: #444; }
 
-        .dir {
+        .arrow {
             position: absolute; background: none; border: none; color: #fff; 
-            font-size: 32px; cursor: pointer; width: 80px; height: 80px;
+            font-size: 30px; cursor: pointer; width: 80px; height: 80px;
             display: flex; align-items: center; justify-content: center;
+        }
+        .up { top: 10px; } .down { bottom: 10px; } .left { left: 10px; } .right { right: 10px; }
+
+        /* Large Action Icons */
+        .icon-row { display: flex; gap: 20px; width: 100%; justify-content: center; }
+        .large-icon {
+            width: 70px; height: 70px; background: #1a1a1a; border: none; 
+            border-radius: 50%; color: #fff; font-size: 24px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .large-icon:active { background: #fff; color: #000; }
+
+        /* Bottom Unlock Section */
+        .bottom-section { width: 100%; text-align: center; }
+        .unlock-pill {
+            width: 100%; height: 65px; background: #fff; color: #000; 
+            border: none; border-radius: 35px; font-weight: 900; 
+            font-size: 18px; cursor: pointer; text-transform: uppercase;
+        }
+        
+        #status-bar { color: #444; font-size: 11px; margin-top: 10px; letter-spacing: 1px; }
+        #hiddenInput { position: absolute; left: -9999px; }
+    </style>
+</head>
+<body>
+
+    <div class="main-screen">
+        <div class="header">HP HARSH OS 7</div>
+
+        <div class="google-dpad">
+            <button class="arrow up" onclick="send('UP')">▲</button>
+            <button class="arrow left" onclick="send('LEFT')">◀</button>
+            <button class="ok-center" onclick="send('OK')">OK</button>
+            <button class="arrow right" onclick="send('RIGHT')">▶</button>
+            <button class="arrow down" onclick="send('DOWN')">▼</button>
+        </div>
+
+        <div class="icon-row">
+            <button class="large-icon" onclick="send('BACK')">↩</button>
+            <button class="large-icon" onclick="openKB()">⌨</button>
+            <button class="large-icon" onclick="send('HOME')">🏠</button>
+            <button class="large-icon" onclick="send('MOUSE')">🖱</button>
+        </div>
+
+        <div class="bottom-section">
+            <button class="unlock-pill" onclick="send('UNLOCK')">Unlock System</button>
+            <p id="status-bar">System Ready</p>
+        </div>
+    </div>
+
+    <input type="text" id="hiddenInput">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADzCExTvEjwcjC6FK1kfmO7N-V_66nE",
+            databaseURL: "https://hp-remote-web-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hp-remote-web"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.send = (val) => {
+            set(ref(db, 'remote_command'), val);
+            const s = document.getElementById('status-bar');
+            s.innerText = "Sent: " + val;
+            s.style.color = "#fff";
+            setTimeout(() => { s.innerText = "System Ready"; s.style.color = "#444"; }, 800);
+        };
+
+        window.openKB = () => { document.getElementById('hiddenInput').focus(); };
+        document.getElementById('hiddenInput').addEventListener('input', (e) => {
+            set(ref(db, 'remote_keyboard'), e.target.value);
+        });
+    </script>
+</body>
+</html>
         }
         .up { top: 10px; } .down { bottom: 10px; } .left { left: 10px; } .right { right: 10px; }
 
