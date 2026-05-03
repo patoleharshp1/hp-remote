@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HP Remote</title>
+    <title>HP Remote Ultra Pro Max</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         html, body { height: 100%; width: 100%; overflow: hidden; background: #000; color: #fff; font-family: sans-serif; }
@@ -34,6 +34,99 @@
             position: absolute; background: none; border: none; color: #fff; 
             font-size: 32px; cursor: pointer; width: 80px; height: 80px;
             display: flex; align-items: center; justify-content: center;
+        }
+        .up { top: 10px; } .down { bottom: 10px; } .left { left: 10px; } .right { right: 10px; }
+
+        /* Icon Row */
+        .icon-row { display: flex; gap: 12px; width: 100%; justify-content: center; }
+        .huge-icon {
+            width: 65px; height: 65px; background: #1a1a1a; border: none; 
+            border-radius: 20px; color: #fff; font-size: 26px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .huge-icon:active { background: #fff; color: #000; }
+
+        /* Action Buttons */
+        .bottom-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        
+        .unlock-pill {
+            width: 100%; height: 55px; background: #fff; color: #000; 
+            border: none; border-radius: 30px; font-weight: 900; 
+            font-size: 18px; cursor: pointer;
+        }
+        
+        .download-btn {
+            width: 80%; height: 45px; background: #007bff; color: #fff; 
+            border: none; border-radius: 25px; font-weight: bold; 
+            font-size: 14px; text-decoration: none; display: flex; 
+            align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .download-btn:active { background: #0056b3; transform: scale(0.95); }
+
+        #status-txt { color: #333; font-size: 9px; margin-top: 5px; }
+        #hiddenInput { position: absolute; left: -9999px; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="header-area">
+            <h1 class="title-primary">HP REMOTE</h1>
+            <p class="title-secondary">HP OS REMOTE</p>
+        </div>
+
+        <div class="google-dpad">
+            <button class="dir up" onclick="tx('UP')">▲</button>
+            <button class="dir left" onclick="tx('LEFT')">◀</button>
+            <button class="ok-btn" onclick="tx('OK')">OK</button>
+            <button class="dir right" onclick="tx('RIGHT')">▶</button>
+            <button class="dir down" onclick="tx('DOWN')">▼</button>
+        </div>
+
+        <div class="icon-row">
+            <button class="huge-icon" onclick="tx('BACK')">↩</button>
+            <button class="huge-icon" onclick="openKB()">⌨</button>
+            <button class="huge-icon" onclick="tx('HOME')">🏠</button>
+            <button class="huge-icon" onclick="tx('MOUSE')">🖱</button>
+        </div>
+
+        <div class="bottom-actions">
+            <button class="unlock-pill" onclick="tx('UNLOCK')">UNLOCK SYSTEM</button>
+            <a href="hp-remote.apk" class="download-btn" download>DOWNLOAD APK</a>
+            <p id="status-txt">ENCRYPTED CONNECTION</p>
+        </div>
+    </div>
+
+    <input type="text" id="hiddenInput">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyADzCExTvEjwcjC6FK1kfmO7N-V_66nE",
+            databaseURL: "https://hp-remote-web-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "hp-remote-web"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.tx = (v) => {
+            set(ref(db, 'remote_command'), v);
+            const msg = document.getElementById('status-txt');
+            msg.innerText = "COMMAND: " + v;
+            msg.style.color = "#007bff";
+            setTimeout(() => { msg.innerText = "ENCRYPTED CONNECTION"; msg.style.color = "#333"; }, 800);
+        };
+
+        window.openKB = () => { document.getElementById('hiddenInput').focus(); };
+        document.getElementById('hiddenInput').addEventListener('input', (e) => {
+            set(ref(db, 'remote_keyboard'), e.target.value);
+        });
+    </script>
+</body>
+</html>
         }
         .up { top: 10px; } .down { bottom: 10px; } .left { left: 10px; } .right { right: 10px; }
 
