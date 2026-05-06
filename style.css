@@ -1,57 +1,65 @@
 body {
     background-color: #000;
     color: #ff0000;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+    font-family: sans-serif;
 }
 
-.container {
-    text-align: center;
-    border: 2px solid #ff0000;
+.phone-frame {
+    width: 100%;
+    max-width: 400px;
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px #ff0000;
+    text-align: center;
 }
 
-.remote-grid {
+.cast-screen {
+    width: 100%;
+    height: 180px;
+    border: 2px solid #333;
+    background: #111;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.controls {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 10px;
-    margin: 20px 0;
 }
 
-.middle-row {
+.row {
     display: flex;
     gap: 10px;
-    justify-content: center;
 }
 
 .btn {
     background: #222;
-    color: #ff0000;
+    color: white;
     border: 1px solid #ff0000;
-    padding: 15px 25px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    border-radius: 5px;
+    padding: 20px;
+    width: 70px;
+    border-radius: 10px;
+    font-weight: bold;
 }
 
 .btn:active {
     background: #ff0000;
-    color: #000;
 }
 
-.apk-btn {
-    display: inline-block;
-    background: #ff0000;
-    color: #000;
-    padding: 10px 20px;
+.apk-link {
+    color: #007bff;
     text-decoration: none;
     font-weight: bold;
-    border-radius: 5px;
-    margin-top: 10px;
+}
+
+#apk-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #222;
 }
