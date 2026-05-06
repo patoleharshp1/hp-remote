@@ -3,79 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HP Remote - Harsh 7 OS</title>
+    <title>HP Harsh OS 7</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div class="container">
-        <h1 id="title">HP REMOTE</h1>
-        <p id="status">Connecting to ESP32...</p>
-
-        <div class="remote-grid">
-            <button class="btn" onclick="sendCommand('UP')">▲</button>
-            <div class="middle-row">
-                <button class="btn" onclick="sendCommand('LEFT')">◀</button>
-                <button class="btn" onclick="sendCommand('OK')">OK</button>
-                <button class="btn" onclick="sendCommand('RIGHT')">▶</button>
-            </div>
-            <button class="btn" onclick="sendCommand('DOWN')">▼</button>
+    <div class="phone-frame">
+        <h1 id="app-title">HP REMOTE</h1>
+        
+        <div class="cast-screen" id="castArea">
+            <p>Wait for Cast...</p>
         </div>
 
-        <div id="download-section">
-            <hr>
-            <p>Get the full experience:</p>
-            <a href="your-app-link.apk" class="apk-btn">Download APK</a>
+        <div class="controls">
+            <button class="btn" onclick="send('UP')">▲</button>
+            <div class="row">
+                <button class="btn" onclick="send('LEFT')">◀</button>
+                <button class="btn" onclick="send('OK')">OK</button>
+                <button class="btn" onclick="send('RIGHT')">▶</button>
+            </div>
+            <button class="btn" onclick="send('DOWN')">▼</button>
+        </div>
+
+        <div id="apk-section">
+            <p>Web Version</p>
+            <a href="Harsh7.apk" class="apk-link">Download APK</a>
         </div>
     </div>
 
     <script>
-        // Check if running as Installed App (PWA)
-        window.addEventListener('load', () => {
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-            if (isStandalone) {
-                document.getElementById('download-section').style.display = 'none';
-                document.getElementById('title').innerText = "HP REMOTE PRO";
-            }
-        });
+        // Detection Logic
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            document.getElementById('apk-section').style.display = 'none';
+            document.getElementById('app-title').innerText = "HP HARSH OS 7";
+        }
 
-        // Placeholder for ESP32 Communication
-        function sendCommand(cmd) {
-            console.log("Sending to ESP32: " + cmd);
-            // Add your Fetch or WebSocket logic here
+        function send(cmd) {
+            console.log("Sending: " + cmd);
+            // This is where you connect to your ESP32 IP
+            // fetch('http://YOUR_ESP_IP/' + cmd);
         }
     </script>
 </body>
 </html>
-        }
-        .up { top: 10px; } .down { bottom: 10px; } .left { left: 10px; } .right { right: 10px; }
-
-        /* Huge Icon Row */
-        .icon-row { display: flex; gap: 12px; width: 100%; justify-content: center; }
-        .huge-icon {
-            width: 65px; height: 65px; background: #1a1a1a; border: none; 
-            border-radius: 20px; color: #fff; font-size: 26px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .huge-icon:active { background: #fff; color: #000; }
-
-        /* Action Buttons */
-        .bottom-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; align-items: center; }
-        
-        .unlock-pill {
-            width: 100%; height: 55px; background: #fff; color: #000; 
-            border: none; border-radius: 30px; font-weight: 900; 
-            font-size: 18px; cursor: pointer;
-        }
-        
-        #dl-wrapper { width: 100%; display: flex; justify-content: center; }
-        .download-btn {
-            width: 80%; height: 45px; background: #007bff; color: #fff; 
-            border: none; border-radius: 25px; font-weight: bold; 
-            font-size: 14px; text-decoration: none; display: flex; 
-            align-items: center; justify-content: center; transition: 0.2s;
-        }
 
         #status-txt { color: #333; font-size: 9px; margin-top: 5px; }
         #hiddenInput { position: absolute; left: -9999px; }
