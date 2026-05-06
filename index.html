@@ -2,38 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HP REMOTE</title>
-    <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        html, body { height: 100%; width: 100%; overflow: hidden; background: #000; color: #fff; font-family: sans-serif; }
-        
-        .main-container {
-            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-            height: 100vh; width: 100vw; padding: 25px 20px;
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HP Remote - Harsh 7 OS</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-        .header-area { text-align: center; }
-        .title-primary { color: #fff; font-size: 26px; font-weight: bold; letter-spacing: 2px; margin-bottom: 4px; }
-        .title-secondary { color: #444; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; font-weight: bold; }
+    <div class="container">
+        <h1 id="title">HP REMOTE</h1>
+        <p id="status">Connecting to ESP32...</p>
 
-        /* Massive Google TV D-Pad */
-        .google-dpad {
-            position: relative; width: 280px; height: 280px; background: #151515; 
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-        }
-        .ok-btn {
-            width: 100px; height: 100px; background: #2a2a2a; border: 2px solid #333; 
-            border-radius: 50%; color: #fff; font-weight: 900; font-size: 24px; 
-            cursor: pointer; z-index: 10; transition: 0.1s;
-        }
-        .ok-btn:active { transform: scale(0.9); background: #444; }
+        <div class="remote-grid">
+            <button class="btn" onclick="sendCommand('UP')">▲</button>
+            <div class="middle-row">
+                <button class="btn" onclick="sendCommand('LEFT')">◀</button>
+                <button class="btn" onclick="sendCommand('OK')">OK</button>
+                <button class="btn" onclick="sendCommand('RIGHT')">▶</button>
+            </div>
+            <button class="btn" onclick="sendCommand('DOWN')">▼</button>
+        </div>
 
-        .dir {
-            position: absolute; background: none; border: none; color: #fff; 
-            font-size: 32px; cursor: pointer; width: 80px; height: 80px;
-            display: flex; align-items: center; justify-content: center;
+        <div id="download-section">
+            <hr>
+            <p>Get the full experience:</p>
+            <a href="your-app-link.apk" class="apk-btn">Download APK</a>
+        </div>
+    </div>
+
+    <script>
+        // Check if running as Installed App (PWA)
+        window.addEventListener('load', () => {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            if (isStandalone) {
+                document.getElementById('download-section').style.display = 'none';
+                document.getElementById('title').innerText = "HP REMOTE PRO";
+            }
+        });
+
+        // Placeholder for ESP32 Communication
+        function sendCommand(cmd) {
+            console.log("Sending to ESP32: " + cmd);
+            // Add your Fetch or WebSocket logic here
+        }
+    </script>
+</body>
+</html>
         }
         .up { top: 10px; } .down { bottom: 10px; } .left { left: 10px; } .right { right: 10px; }
 
