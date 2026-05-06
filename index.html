@@ -3,37 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HP Harsh OS 7</title>
+    <title>HP Remote - Harsh 7</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #000;
+            color: #ff0000;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .phone-frame {
+            border: 3px solid #333;
+            border-radius: 30px;
+            padding: 20px;
+            background: #0a0a0a;
+            box-shadow: 0 0 20px #ff000044;
+        }
+
+        h1 { font-size: 1.5rem; margin-bottom: 10px; text-shadow: 0 0 5px #ff0000; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: #1a1a1a;
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            padding: 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:active { background: #ff0000; color: #000; }
+        
+        .center { grid-column: 2; }
+        .full-width { grid-column: span 3; margin-top: 10px; }
+
+        #download-section {
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px solid #333;
+            text-align: center;
+        }
+
+        .apk-link { color: #fff; text-decoration: underline; font-size: 0.8rem; }
+    </style>
 </head>
 <body>
+
     <div class="phone-frame">
-        <h1 id="app-title">HP REMOTE</h1>
+        <h1 id="header">HP REMOTE</h1>
         
-        <div class="cast-screen" id="castArea">
-            <p>Wait for Cast...</p>
-        </div>
-
-        <div class="controls">
-            <button class="btn" onclick="send('UP')">▲</button>
-            <div class="row">
-                <button class="btn" onclick="send('LEFT')">◀</button>
-                <button class="btn" onclick="send('OK')">OK</button>
-                <button class="btn" onclick="send('RIGHT')">▶</button>
-            </div>
-            <button class="btn" onclick="send('DOWN')">▼</button>
-        </div>
-
-        <div id="apk-section">
-            <p>Web Version</p>
-            <a href="Harsh7.apk" class="apk-link">Download APK</a>
-        </div>
-    </div>
-
-    <script>
-        // Detection Logic
-        if (window.matchMedia('(display-mode: standalone)').matches) {
+        <div class="grid">
+            <button class="btn center" onclick="send('UP')">▲</button>
+            <button class="btn" onclick="send('LEFT')">◀</button>
+            <button class="btn" onclick="send('OK')">OK</button>
+            <button class="btn" onclick="send('RIGHT')
             document.getElementById('apk-section').style.display = 'none';
             document.getElementById('app-title').innerText = "HP HARSH OS 7";
         }
